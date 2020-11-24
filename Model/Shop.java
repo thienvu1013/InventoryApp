@@ -1,3 +1,4 @@
+package Model;
 /**
  * Shop represent the Shop itself
  * @author Thien Nguyen
@@ -21,7 +22,7 @@ public class Shop {
 	 */
 	public Shop(Inventory i,SupplierList sup) {
 		inv = i;
-		supList = sup;
+		setSupList(sup);
 
 	}
 	
@@ -88,6 +89,14 @@ public class Shop {
 	 */
 	public void recieve(String orderID) {
 		inv.recieveOrder(orderID);
+	}
+
+	public SupplierList getSupList() {
+		return supList;
+	}
+
+	public void setSupList(SupplierList supList) {
+		this.supList = supList;
 	}
 }
 

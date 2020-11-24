@@ -1,3 +1,4 @@
+package Model;
 import java.util.ArrayList;
 /**
  * Inventory represent an inventory of the shop. It contain a list of items and manages the orders

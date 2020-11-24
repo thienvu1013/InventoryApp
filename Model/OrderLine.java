@@ -1,3 +1,4 @@
+package Model;
 /**
  * OrderLine represent an order line per order
  * @author Thien Nguyen
@@ -12,7 +13,7 @@ public class OrderLine {
 	/**
 	 * the String value of the supplier name
 	 */
-	private String supplierName;
+	private int supplierName;
 	/**
 	 * The quantity to be ordered
 	 */
@@ -24,7 +25,7 @@ public class OrderLine {
 	 */
 	OrderLine(Item i){
 		this.item = i;
-		this.supplierName = item.getSupplier().getName();
+		this.supplierName = item.getSupplier();
 		this.quantity = item.getRequiredQuantity();
 	}
 	

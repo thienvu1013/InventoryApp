@@ -1,3 +1,4 @@
+package Model;
 /**
  * Supplier represent the supplier that supplies items to the shop
  * @author Thien Nguyen

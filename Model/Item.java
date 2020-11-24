@@ -1,10 +1,18 @@
+package Model;
+
+import java.io.Serializable;
+
 /**
  * Item represent an Item within the store
  * @author Thien Nguyen
  * @since October 12 2020
  * @version 1.0
  */
-public class Item {
+public abstract class Item implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * The ID of the item
 	 */
@@ -20,7 +28,7 @@ public class Item {
 	/**
 	 * The supplier of the item
 	 */
-	private Supplier supplier;
+	private int supplier;
 	/**
 	 * The price of the item
 	 */
@@ -38,8 +46,12 @@ public class Item {
 	/**
 	 * Constructor
 	 */
-	public Item() {
-		
+	public Item(int id, String name, int qty, double price,int sup) {
+		this.ID = id;
+		this.name = name;
+		this.quantity = qty;
+		this.price = price;
+		this.supplier = sup;
 	}
 	/**
 	 * Getter function for ID
@@ -90,7 +102,7 @@ public class Item {
 	 * Getter function for supplier
 	 * @return the supplier
 	 */
-	public Supplier getSupplier() {
+	public int getSupplier() {
 		return supplier;
 	}
 	
@@ -98,7 +110,7 @@ public class Item {
 	 * Setter function for supplier
 	 * @param supplier The object of a supplier
 	 */
-	public void setSupplier(Supplier supplier) {
+	public void setSupplier(int supplier) {
 		this.supplier = supplier;
 	}
 	
@@ -160,4 +172,5 @@ public class Item {
 	public void setOrderedQuantity(int orderedQuantity) {
 		this.orderedQuantity = orderedQuantity;
 	}
+
 }

@@ -1,3 +1,4 @@
+package Model;
 import java.util.ArrayList;
 /**
  * SupplierList represent a list of suppliers that supply items for the shop
