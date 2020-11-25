@@ -22,17 +22,17 @@ public class Deserializer {
 		try {
 			theMessage = (Message) objectIn.readObject();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			System.out.println("class not found");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			theMessage = new Message();
+			theMessage.setAction(-1);
 		}
 		return theMessage;
 		
 	}
 	
-	public void closeStream() {
+	public void close() {
 		try {
 			objectIn.close();
 		} catch (IOException e) {

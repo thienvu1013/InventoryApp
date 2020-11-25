@@ -3,10 +3,12 @@ package Server.Controller;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import Model.Message;
+import Model.UserCredential;
 
 public class ModelController implements Runnable {
 	private CustomerController custCtrl;
@@ -27,7 +29,7 @@ public class ModelController implements Runnable {
 			this.dbCtrl = dbCtrl;
 			this.setCustCtrl(cc);
 			this.setInvCtrl(ic);
-			setPool(Executors.newFixedThreadPool(10));
+			setPool(Executors.newFixedThreadPool(2));
 		} catch (IOException e) {
 			System.out.println("Server failed");
 			e.printStackTrace();
@@ -43,8 +45,7 @@ public class ModelController implements Runnable {
 				
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Client terminating");
 			
 		}
 	}
@@ -52,13 +53,28 @@ public class ModelController implements Runnable {
 
 	@Override
 	public void run() {
-		while(isRunning) {
-			inMessage = serverCtrl.recieveMessage();
-			if (inMessage != null) {
-				actionCase(inMessage);
+		try {
+			while(isRunning) {
+				inMessage = serverCtrl.recieveMessage();
+				if(inMessage.getAction()==-1) {
+					break;
+				}
+				else if (inMessage != null) {
+					actionCase(inMessage);
+				}
+			}
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}finally {
+			System.out.println("closing client");
+			serverCtrl.closeClient();
+			try {
+				dbCtrl.getJdbc_connection().close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
-		
 	}
 	
 	public void actionCase(Message message){
@@ -68,12 +84,11 @@ public class ModelController implements Runnable {
 			switch (choice) {
 			//if no controller specified then it is for verifying user
 			case 1:
-				String username = message.getUserInfo().getUsername();
-				String password = new String(message.getUserInfo().getPassword());
+				String username = ((UserCredential)message.getObject()).getUsername();
+				String password = new String(((UserCredential)message.getObject()).getPassword());
 				boolean valid = dbCtrl.verify(username,password);
 				outMessage = new Message();
 				if (valid) {
-					
 					outMessage.setAction(1);
 					outMessage.setInfo("User Verified");
 				}
@@ -88,16 +103,12 @@ public class ModelController implements Runnable {
 		else if (controller.equals("customer")){
 			serverCtrl.sendMessage(custCtrl.handle(message));
 		}
-		else {
+		else if (controller.equals("inventory")){
 			serverCtrl.sendMessage(invCtrl.handle(message));
 		}
 	}
 	
 
-	
-	
-	
-	
 	public Socket getClientSocket() {
 		return clientSocket;
 	}
@@ -153,5 +164,7 @@ public class ModelController implements Runnable {
 	public void setOutMessage(Message outMessage) {
 		this.outMessage = outMessage;
 	}
+	
+	
 
 }

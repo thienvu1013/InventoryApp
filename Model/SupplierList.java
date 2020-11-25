@@ -11,6 +11,11 @@ public class SupplierList {
 	 * The list of suppliers
 	 */
 	ArrayList<Supplier> sList;
+	
+	public SupplierList() {
+		sList = new ArrayList<Supplier>();
+	}
+	
 	SupplierList(ArrayList<Supplier> s){
 		sList = s;
 	}
@@ -20,6 +25,7 @@ public class SupplierList {
 	 * @param ID the ID
 	 * @return the supplier
 	 */
+	
 	public Supplier findSupplier(int ID) {
 		for (Supplier s : sList) {
 			if( s.getID() == ID) {

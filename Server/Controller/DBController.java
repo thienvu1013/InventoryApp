@@ -43,18 +43,17 @@ public class DBController {
 	
 	public boolean verify(String username, String password) {
 		ResultSet myRs;
-		try {/**
-			statement = jdbc_connection.prepareStatement("SELECT * FROM " + credTable+" WHERE Username=? AND Password=?;");
-			statement.setString(1, username);
-			statement.setString(2, password);
-			myRs = statement.executeQuery();*/
+		try {
 			myCall = jdbc_connection.prepareCall("{call get_credentials(?,?)}");
 			myCall.setString(1, username);
 			myCall.setString(2, password);
 			myCall.execute();
-			myRs = myCall.getResultSet();
+			myRs = myCall.getResultSet();	
+			if (!myRs.next()){
+				return false;
+			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			System.out.println("log in error");
 			e.printStackTrace();
 			return false;
 		}
@@ -63,17 +62,13 @@ public class DBController {
 	
 	public ResultSet searchCustID(int id) {
 		ResultSet myRs;
-		try {/**
-			statement = jdbc_connection.prepareStatement("SELECT * FROM " + custTable+" WHERE Customer_ID=?;");
-			statement.setInt(1,id);
-			myRs = statement.executeQuery();*/
+		try {
 			myCall = jdbc_connection.prepareCall("{call get_customerID(?)}");
 			myCall.setInt(1, id);
 			myCall.execute();
 			myRs = myCall.getResultSet();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			System.out.println("Error in getting customer ID");
 			e.printStackTrace();
 			return null;
 		}
@@ -82,16 +77,12 @@ public class DBController {
 	
 	public ResultSet searchCustLast(String last) {
 		ResultSet myRs;
-		try {/**
-			statement = jdbc_connection.prepareStatement("SELECT * FROM " + custTable + " WHERE LName=?;");
-			statement.setString(1,last);
-			myRs = statement.executeQuery();*/
+		try {
 			myCall = jdbc_connection.prepareCall("{call get_customerName(?)}");
 			myCall.setString(1, last);
 			myCall.execute();
 			myRs = myCall.getResultSet();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -100,10 +91,7 @@ public class DBController {
 	
 	public ResultSet searchCustType(String type) {
 		ResultSet myRs;
-		try {/**
-			statement = jdbc_connection.prepareStatement("SELECT * FROM " + custTable + " WHERE Type=?;");
-			statement.setString(1,type);
-			myRs = statement.executeQuery();*/
+		try {
 			myCall = jdbc_connection.prepareCall("{call get_customerType(?)}");
 			myCall.setString(1, type);
 			myCall.execute();
@@ -118,19 +106,10 @@ public class DBController {
 	
 	
 	
-	public void addCustomer(int id, String last, String first,
+	public boolean addCustomer(int id, String last, String first,
 								String type, String phone,
 								String address, String postal) 
-										throws SQLException {/**
-		statement = jdbc_connection.prepareStatement("INSERT INTO " + custTable + " VALUES (?,?,?,?,?,?,?);");
-		statement.setInt(1,id);
-		statement.setString(2,last);
-		statement.setString(3,first);
-		statement.setString(4,type);
-		statement.setString(5,phone);
-		statement.setString(6,address);
-		statement.setString(7,postal);
-		statement.executeUpdate();*/
+										throws SQLException {
 		myCall = jdbc_connection.prepareCall("{call create_customer(?,?,?,?,?,?,?)}");
 		myCall.setInt(1,id);
 		myCall.setString(2,last);
@@ -139,32 +118,25 @@ public class DBController {
 		myCall.setString(5,phone);
 		myCall.setString(6,address);
 		myCall.setString(7,postal);
-		myCall.execute();
+		System.out.println("executing call");
+		return(myCall.execute());
 	}
 	
-	public void deleteCustomer(int id) throws SQLException {/**
-		statement = jdbc_connection.prepareStatement("DELETE FROM " + custTable + " WHERE Customer_ID =?;");
-		statement.setInt(1,id);*/
+	public boolean deleteCustomer(int id) throws SQLException {
 		myCall = jdbc_connection.prepareCall("{call delete_customer(?)}");
 		myCall.setInt(1, id);
-		myCall.execute();
+		return(myCall.execute());
 	}
 	
 	//Inventory control
 	
 	public ResultSet findAll() {
 		ResultSet myRs;
-		try {/**
-			statement = jdbc_connection.prepareStatement("SELECT T.ToolID, T.Name,T.Type,T.Quantity,T.Price, T.SupplierID, E.PowerType"
-														+ "	FROM "+ toolTable +" as T"
-														+ "	LEFT JOIN " + electricalTable+" AS E"
-														+ " ON T.ToolID = E.ToolID;");
-			myRs = statement.executeQuery();*/
+		try {
 			myCall = jdbc_connection.prepareCall("{call find_all_tools()}");
 			myCall.execute();
 			myRs = myCall.getResultSet();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -173,20 +145,12 @@ public class DBController {
 	
 	public ResultSet searchItemName(String name) {
 		ResultSet myRs;
-		try {/**
-			statement = jdbc_connection.prepareStatement("SELECT T.ToolID, T.Name,T.Type,T.Quantity,T.Price, T.SupplierID, E.PowerType"
-														+ "	FROM "+ toolTable +" as T"
-														+ "	LEFT JOIN " + electricalTable+" AS E"
-														+ " ON T.ToolID = E.ToolID"
-														+ " WHERE T.Name=?");
-			statement.setString(1,name);
-			myRs = statement.executeQuery();*/
+		try {
 			myCall = jdbc_connection.prepareCall("{call search_toolName(?)}");
 			myCall.setString(1,name);
 			myCall.execute();
 			myRs = myCall.getResultSet();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -196,20 +160,12 @@ public class DBController {
 	
 	public ResultSet searchItemID(int id) {
 		ResultSet myRs;
-		try {/**
-			statement = jdbc_connection.prepareStatement("SELECT T.ToolID, T.Name,T.Type,T.Quantity,T.Price, T.SupplierID, E.PowerType"
-														+ "	FROM "+ toolTable +" as T"
-														+ "	LEFT JOIN " + electricalTable+" AS E"
-														+ " ON T.ToolID = E.ToolID"
-														+ " WHERE T.ToolID=?");
-			statement.setInt(1,id);
-			myRs = statement.executeQuery();*/
-			myCall = jdbc_connection.prepareCall("{call search_toolID()}");
+		try {
+			myCall = jdbc_connection.prepareCall("{call search_toolID(?)}");
 			myCall.setInt(1,id);
 			myCall.execute();
 			myRs = myCall.getResultSet();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -218,19 +174,15 @@ public class DBController {
 	
 
 	public boolean decreaseQty(int id, int qty) {
-		try {/**
-			statement = jdbc_connection.prepareStatement("UPDATE " + toolTable + " SET Quantity =?"
-					+ " WHERE ToolID=?;");
-			statement.setInt(1,qty);
-			statement.setInt(1,id);
-			statement.executeUpdate();*/
+		try {
 			myCall = jdbc_connection.prepareCall("{call decrease_qty(?,?)}");
 			myCall.setInt(1,id);
-			myCall.setInt(2, qty);
-			success = myCall.execute();
+			myCall.setInt(2,qty);
+			myCall.execute();
+			success = true;
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			success = false;
 			
 			e.printStackTrace();
 		}
@@ -246,9 +198,10 @@ public class DBController {
 			myCall.setDouble(4,item_price);
 			myCall.setInt(5,item_sup);
 			myCall.setString(6, power);
-			success = myCall.execute();
+			myCall.execute();
+			success = true;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			success = false;
 			e.printStackTrace();
 		}
 		return success;
@@ -265,9 +218,10 @@ public class DBController {
 			myCall.setInt(5,item_sup);
 			myCall.setString(6, type);
 			myCall.setString(7,power);
-			success = myCall.execute();
+			myCall.execute();
+			success = true;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			success = false;
 			e.printStackTrace();
 		}
 		return success;
@@ -277,11 +231,26 @@ public class DBController {
 		try {
 			myCall = jdbc_connection.prepareCall("{call delete_tool(?)}");
 			myCall.setInt(1,id);
+			myCall.execute();
+			success = true;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			success = false;
 			e.printStackTrace();
 		}
 		return success;
+	}
+	
+	public ResultSet findShortage() {
+		ResultSet myRs;
+		try {
+			myCall = jdbc_connection.prepareCall("{call find_shortage()}");
+			myCall.execute();
+			myRs = myCall.getResultSet();
+			} catch (SQLException e) {
+			return null;
+		}
+		return myRs;
+		
 	}
 	
 	
@@ -334,6 +303,14 @@ public class DBController {
 
 	public void setElectricalTable(String electricalTable) {
 		this.electricalTable = electricalTable;
+	}
+	
+	public Connection getJdbc_connection() {
+		return jdbc_connection;
+	}
+
+	public void setJdbc_connection(Connection jdbc_connection) {
+		this.jdbc_connection = jdbc_connection;
 	}
 	
 }

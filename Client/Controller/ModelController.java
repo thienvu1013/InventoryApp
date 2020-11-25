@@ -19,7 +19,6 @@ public class ModelController {
 	UserCredential userInfo;
 	Message outMessage;
 	Message inMessage;
-	String controller;
 
 	public ModelController(ClientController cc) {
 		this.clientCtrl = cc;
@@ -37,10 +36,10 @@ public class ModelController {
 		this.clientCtrl.sendMessage(m);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public String createCustList(Message message) {
-		System.out.println("creating string");
 		String result ="";
-		custList = message.getCustList();
+		custList = (ArrayList<Customer>) message.getObject();
 		for(Customer customer : custList) {
 			customer = (Residential) customer;
 			String id = Integer.toString(customer.getCustomer_id());
@@ -57,18 +56,21 @@ public class ModelController {
 					firstName+sep+
 					phone+sep+
 					postal+sep+
-					type+sep+
+					type+
 					endline;
 		}
 		return result;
 	}
 	
 	public Object[][] createInvList(Message message){
-		ArrayList<Item> itemList = message.getItemList();
+		@SuppressWarnings("unchecked")
+		ArrayList<Item> itemList = (ArrayList<Item>) message.getObject();
 		Object[][] result = new Object[itemList.size()][];
 		int index = 0;
 		for(Item i:itemList) {
+
 			result[index] = createObjectArray(i);
+			index++;
 		}
 		return result;
 	}
@@ -100,7 +102,6 @@ public class ModelController {
 	
 	public void createCustomer(String custid,String first,String last,String ad,String postal,String phone,String type) {
 		int id = Integer.parseInt(custid);
-		controller = "customer";
 		if (type.equals("R")){
 			theCustomer = new Residential(id, last, first, phone, ad, postal,type);
 		}
@@ -111,25 +112,16 @@ public class ModelController {
 			return;
 		}
 		outMessage.setAction(4);
-		outMessage.setController(controller);
-		outMessage.setTheCustomer(theCustomer);
+		outMessage.setObject(theCustomer);
+		outMessage.setController("customer");
 		sendServerMessage(outMessage);
 	}
-	public void deleteCustomer(String custid,String first,String last,String ad,String postal,String phone,String type) {
+	public void deleteCustomer(String custid) {
+		System.out.println("model called");
 		int id = Integer.parseInt(custid);
-		controller = "customer";
-		if (type.equals("R")){
-			theCustomer = new Residential(id, last, first, phone, ad, postal,type);
-		}
-		else if(type.equals("C")) {
-			theCustomer = new Commercial(id,last, first, phone, ad, postal, type);
-		}
-		else {
-			return;
-		}
 		outMessage.setAction(5);
-		outMessage.setController(controller);
-		outMessage.setTheCustomer(theCustomer);
+		outMessage.setObject(id);
+		outMessage.setController("customer");
 		sendServerMessage(outMessage);
 	}
 	

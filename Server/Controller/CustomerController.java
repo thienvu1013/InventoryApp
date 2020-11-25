@@ -35,32 +35,29 @@ public class CustomerController {
 			switch(choice) {
 			case 1: 
 					int id = Integer.parseInt(message.getInfo());
-					System.out.println("customer id "+ id);
 					myRs = dbCtrl.searchCustID(id);
 					outMessage =generateMessage(myRs);
-					System.out.println("case 1 completed");
 					break;
 			case 2:
-					
 					String last = message.getInfo();
 					myRs = dbCtrl.searchCustLast(last);
 					outMessage =generateMessage(myRs);
 					break;
 			
 			case 3:
-					
 					String type = message.getInfo();
 					myRs = dbCtrl.searchCustType(type);
 					outMessage =generateMessage(myRs);	
 					break;
 			
 			case 4:
-					customer = message.getTheCustomer();
+					customer = (Customer) message.getObject();
 					outMessage = addCustomer(customer);
 					break;
 			case 5:
-					customer = message.getTheCustomer();
-					outMessage = deleteCustomer(customer);
+					System.out.println("server recieved");
+					id = (int) message.getObject();
+					outMessage = deleteCustomer(id);
 					break;
 			}	
 		} catch (SQLException e) {
@@ -72,18 +69,20 @@ public class CustomerController {
 	
 
 	public ArrayList<Customer> createCustList(ResultSet rs) throws SQLException {
-		System.out.println("creating list");
 		ArrayList<Customer> theList = new ArrayList<Customer>();
-		while(rs.next()) {
-			Customer customer = createCust(rs);
-			theList.add(customer);
+		if (!rs.next() ) {
+		    return null;
+		} else {
+		    do {
+		    	Customer customer = createCust(rs);
+				theList.add(customer);
+		    } while (rs.next());
 		}
 		return theList;
 		
 	}
 	
 	public Customer createCust(ResultSet rs) throws SQLException {
-		System.out.println("creating cust");
 		Customer customer;
 		if(checkResidential(rs)) {
 			customer = createResidential(rs);
@@ -117,11 +116,16 @@ public class CustomerController {
 	}
 	
 	public Message generateMessage(ResultSet myRs) throws SQLException {
-		System.out.println("generating message");
 		ArrayList<Customer>custList = createCustList(myRs);
-		outMessage.setAction(1);
-		outMessage.setCustList(custList);
+		if (custList!= null) {
+			outMessage.setAction(1);
+			outMessage.setObject(custList);
+		}
+		else {
+			outMessage.setAction(0);
+		}
 		return outMessage;
+
 	}
 	
 	public Message addCustomer(Customer customer) {
@@ -134,27 +138,25 @@ public class CustomerController {
 		String postalCode = customer.getPostal();
 		try {
 			dbCtrl.addCustomer(customerID, lastName, firstName, type, phone,address, postalCode);
-			outMessage.setInfo("Successfully added "+ firstName + " " + lastName + " to database!");
-	
-			
+			outMessage.setInfo("Successfully added "+ firstName + " " + lastName + " to database!");	
 		}catch(Exception e) {
 			e.getMessage();
+			outMessage.setInfo("Failed to added "+ firstName + " " + lastName + " to database!");
 			outMessage.setInfo("Invalid input");
 		}
 		outMessage.setAction(2);
 		return outMessage;
 	}
 	
-	public Message deleteCustomer(Customer customer) {
-		int customerID = customer.getCustomer_id();
+	public Message deleteCustomer(int id) {
+		int customerID = id;
 		try {
 			dbCtrl.deleteCustomer(customerID);
-			outMessage.setInfo("Successfully deleted customer :"+ customerID + " from database!");
-	
+			outMessage.setInfo("Successfully deleted customer: "+ id + " from database!");
 			
 		}catch(Exception e) {
-			e.getMessage();
 			outMessage.setInfo("Customer not found, please check for valid ID");
+			e.getMessage();
 		}
 		outMessage.setAction(2);
 		return outMessage;

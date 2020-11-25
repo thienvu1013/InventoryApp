@@ -8,7 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import Client.View.InventoryGUI;
 import Model.Message;
 
-public class InventoryViewController implements Runnable {
+public class InventoryViewController{
 	private ModelController modelCtrl;
 	private InventoryGUI inventoryGUI;
 	private Message outMessage;
@@ -37,16 +37,6 @@ public class InventoryViewController implements Runnable {
 				new submitAdd(),
 				new submitDelete());
 			
-		//startWindow();
-	}
-	public void startWindow() {
-		while(true) {
-			inMessage = modelCtrl.getServerResponse();
-			if(inMessage != null && inMessage.getController().equals("inventory")) {
-				actionCase(inMessage);
-				inMessage = new Message();
-			}
-		}
 	}
 	
 	
@@ -55,6 +45,7 @@ public class InventoryViewController implements Runnable {
 		switch(choice) {
 		//display on table
 		case(1):
+			System.out.println("list recieved");
 			Object[][] invList = modelCtrl.createInvList(message);
 			DefaultTableModel tableModel = (DefaultTableModel) inventoryGUI.getResultTable().getModel();
 			tableModel.setRowCount(0);
@@ -83,8 +74,12 @@ public class InventoryViewController implements Runnable {
 	public class listAllButton implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			System.out.println("button clicked");
 			outMessage.setAction(1);
 			modelCtrl.sendServerMessage(outMessage);
+			inMessage = modelCtrl.getServerResponse();
+			actionCase(inMessage);
+			inMessage = new Message();
 
 		}
 		
@@ -93,7 +88,7 @@ public class InventoryViewController implements Runnable {
 	public class searchNameButton implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {	
-			inventoryGUI.getPromptPane().moveToFront(inventoryGUI.getPromptNamePane());
+			inventoryGUI.getCl().show(inventoryGUI.getPromptPane(),"1");
 		}
 		
 	}
@@ -103,7 +98,7 @@ public class InventoryViewController implements Runnable {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			inventoryGUI.getPromptPane().moveToFront(inventoryGUI.getPromptIDPane());
+			inventoryGUI.getCl().show(inventoryGUI.getPromptPane(),"2");
 			
 		}
 			
@@ -114,7 +109,7 @@ public class InventoryViewController implements Runnable {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			inventoryGUI.getPromptPane().moveToFront(inventoryGUI.getPromptIDPane());
+			inventoryGUI.getCl().show(inventoryGUI.getPromptPane(),"1");
 			
 		}
 		
@@ -124,7 +119,7 @@ public class InventoryViewController implements Runnable {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			inventoryGUI.getPromptPane().moveToFront(inventoryGUI.getPromptQtyPane());
+			inventoryGUI.getCl().show(inventoryGUI.getPromptPane(),"3");
 			
 		}
 		
@@ -134,7 +129,7 @@ public class InventoryViewController implements Runnable {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			inventoryGUI.getPromptPane().moveToFront(inventoryGUI.getAddDeletePanel());
+			inventoryGUI.getCl().show(inventoryGUI.getPromptPane(),"4");
 			
 		}
 		
@@ -148,7 +143,9 @@ public class InventoryViewController implements Runnable {
 			outMessage.setController(controller);
 			outMessage.setInfo(name);
 			modelCtrl.sendServerMessage(outMessage);
-			
+			inMessage = modelCtrl.getServerResponse();
+			actionCase(inMessage);
+			inMessage = new Message();
 			
 		}
 		
@@ -164,6 +161,9 @@ public class InventoryViewController implements Runnable {
 			outMessage.setInfo(id);
 			outMessage.setAction(3);
 			modelCtrl.sendServerMessage(outMessage);
+			inMessage = modelCtrl.getServerResponse();
+			actionCase(inMessage);
+			inMessage = new Message();
 			
 		}
 	}
@@ -178,8 +178,12 @@ public class InventoryViewController implements Runnable {
 			outMessage.setAction(4);
 			outMessage.setController(controller);
 			outMessage.setInfo(tool);
-			outMessage.setQty(qty);
+			outMessage.setObject(qty);
+			System.out.println("qty send message");
 			modelCtrl.sendServerMessage(outMessage);
+			inMessage = modelCtrl.getServerResponse();
+			actionCase(inMessage);
+			inMessage = new Message();
 			
 		}
 		
@@ -197,10 +201,13 @@ public class InventoryViewController implements Runnable {
 			int sup_id = Integer.parseInt(inventoryGUI.getaDSupplyField().getText());
 			String type = inventoryGUI.getaDTypeField().getText();
 			String power = inventoryGUI.getaDPowerField().getText();
-			outMessage.setTheItem(modelCtrl.createItem(id,name,qty,price,sup_id,type,power));
+			outMessage.setObject(modelCtrl.createItem(id,name,qty,price,sup_id,type,power));
 			outMessage.setAction(5);
 			outMessage.setController(controller);
-			modelCtrl.sendServerMessage(outMessage);	
+			modelCtrl.sendServerMessage(outMessage);
+			inMessage = modelCtrl.getServerResponse();
+			actionCase(inMessage);
+			inMessage = new Message();
 		}
 		
 		
@@ -214,20 +221,14 @@ public class InventoryViewController implements Runnable {
 			outMessage.setInfo(id);
 			outMessage.setAction(6);
 			outMessage.setController(controller);
-			modelCtrl.sendServerMessage(outMessage);	
+			modelCtrl.sendServerMessage(outMessage);
+			inMessage = modelCtrl.getServerResponse();
+			actionCase(inMessage);
+			inMessage = new Message();
 			
 		}
 		
 		
 	}
-
-	@Override
-	public void run() {
-		startWindow();
-		
-	}
-
-	
-	
 
 }

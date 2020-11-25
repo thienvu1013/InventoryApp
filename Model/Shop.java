@@ -20,10 +20,9 @@ public class Shop {
 	 * @param i The inventory
 	 * @param sup The supplier list
 	 */
-	public Shop(Inventory i,SupplierList sup) {
-		inv = i;
-		setSupList(sup);
-
+	public Shop(Inventory i,SupplierList sup,CustomerList custList) {
+		this.inv = i;
+		this.supList = sup;
 	}
 	
 	/**
@@ -32,6 +31,7 @@ public class Shop {
 	public void listAllItems() {
 		inv.listAll();
 	}
+
 	
 	/**
 	 * Getter function for item

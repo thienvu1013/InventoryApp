@@ -41,14 +41,12 @@ public class LoginController {
 	
 	public void verifyUser() {
 		//ask server to verify user
-		System.out.println("verifying user");
 		outMessage.setAction(1);
-		outMessage.setUserInfo(this.getUser());
+		outMessage.setObject(this.getUser());
 		modelCtrl.sendServerMessage(outMessage);
 		inMessage = modelCtrl.getServerResponse();
 		//user is verified
 		if (inMessage.getAction() == 1) {
-			System.out.println("User is verified");
 			accept();
 		}
 		//user is not verified, return to start
@@ -67,13 +65,12 @@ public class LoginController {
 	public void accept() {
 		custCtrl.startupView();
 		invCtrl.startupView();
-		Thread customer =new Thread(custCtrl);
-		Thread inv =new Thread(invCtrl);
-		customer.start();
-		inv.start();
+		loginGUI.setVisible(false);
+		
 	}
 	
 	public void deny() {
+		loginGUI.getUserField().setText("");
 		setLogginIn(false);
 	}
 	

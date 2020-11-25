@@ -21,7 +21,13 @@ public class Inventory {
 	 * @param i A list of Items
 	 * @param order A list of Orders
 	 */
-	Inventory(ArrayList<Item> i, ArrayList<Order> order){
+	public Inventory() {
+		items = new ArrayList<Item>();
+		order = new ArrayList<Order>();
+	}
+	
+	
+	public Inventory(ArrayList<Item> i, ArrayList<Order> order){
 		this.items = i;
 		this.order = order; 
 	}

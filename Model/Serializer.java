@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import Model.Message;
-
 public class Serializer {
 	private ObjectOutputStream objectOut;
 	
@@ -30,7 +28,7 @@ public class Serializer {
 		
 	}
 	
-	public void closeStream() {
+	public void close() {
 		try {
 			objectOut.close();
 		} catch (IOException e) {

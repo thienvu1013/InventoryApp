@@ -82,6 +82,7 @@ public class InventoryGUI extends javax.swing.JFrame {
         messageLabel = new javax.swing.JLabel();
         messageArea = new javax.swing.JScrollPane();
         messageBox = new javax.swing.JTextArea();
+        cl = new java.awt.CardLayout();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -159,7 +160,7 @@ public class InventoryGUI extends javax.swing.JFrame {
 
         resultLabel.setText("Result:");
 
-        resultTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        resultTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102,102,255)));
         resultTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -176,6 +177,8 @@ public class InventoryGUI extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
+        resultTable.getTableHeader().setBackground(new java.awt.Color(221, 204, 240));
+        resultTable.getTableHeader().setForeground(new java.awt.Color(140, 52, 235));
         jScrollPane2.setViewportView(resultTable);
         if (resultTable.getColumnModel().getColumnCount() > 0) {
             resultTable.getColumnModel().getColumn(2).setResizable(false);
@@ -203,7 +206,8 @@ public class InventoryGUI extends javax.swing.JFrame {
         );
 
         promptPane.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(102, 102, 255), 2, true));
-        promptPane.setLayout(new java.awt.CardLayout());
+
+        promptPane.setLayout(cl);
 
         enterIDLabel.setText("Enter Tool ID:");
         enterIDLabel.setToolTipText("");
@@ -245,7 +249,7 @@ public class InventoryGUI extends javax.swing.JFrame {
                 .addContainerGap(87, Short.MAX_VALUE))
         );
 
-        promptPane.add(promptIDPane, "card2");
+        promptPane.add(promptIDPane, "2");
 
         promptNameLabel.setText("Enter Tool Name:");
 
@@ -282,7 +286,7 @@ public class InventoryGUI extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        promptPane.add(promptNamePane, "card3");
+        promptPane.add(promptNamePane, "1");
 
         promptToolLabel.setText("Enter Tool ID:");
 
@@ -330,7 +334,7 @@ public class InventoryGUI extends javax.swing.JFrame {
                 .addGap(72, 72, 72))
         );
 
-        promptPane.add(promptQtyPane, "card3");
+        promptPane.add(promptQtyPane, "3");
 
         aDName.setText("Name:");
 
@@ -431,7 +435,7 @@ public class InventoryGUI extends javax.swing.JFrame {
                         .addContainerGap())))
         );
 
-        promptPane.add(addDeletePanel, "card3");
+        promptPane.add(addDeletePanel, "4");
 
         messagePane.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(102, 102, 255), 2, true));
 
@@ -892,6 +896,13 @@ public class InventoryGUI extends javax.swing.JFrame {
 	public void setToolBannerLabel(javax.swing.JLabel toolBannerLabel) {
 		this.toolBannerLabel = toolBannerLabel;
 	}
+	 public java.awt.CardLayout getCl() {
+		return cl;
+	}
+
+	public void setCl(java.awt.CardLayout cl) {
+		this.cl = cl;
+	}
 
 
 
@@ -945,7 +956,10 @@ public class InventoryGUI extends javax.swing.JFrame {
     private javax.swing.JButton searchQuantButton;
     private javax.swing.JPanel toolBanner;
     private javax.swing.JLabel toolBannerLabel;
-    // End of variables declaration//GEN-END:variables
+    private java.awt.CardLayout cl;
+   
+
+	// End of variables declaration//GEN-END:variables
     public void addButtonListener(ActionListener listAll,ActionListener searchName,ActionListener searchId,
 			ActionListener searchQty, ActionListener decrease,ActionListener addRemove, ActionListener submitName,ActionListener submitID,
 			ActionListener submitQty,ActionListener submitAdd,ActionListener submitDelete) {

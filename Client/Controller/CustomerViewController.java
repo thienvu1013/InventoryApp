@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import Client.View.CustomerGUI;
 import Model.Message;
 
-public class CustomerViewController implements Runnable {
+public class CustomerViewController{
 	private CustomerGUI customerGUI;
 	private ModelController modelCtrl;
 	Message outMessage;
@@ -17,6 +17,7 @@ public class CustomerViewController implements Runnable {
 		this.modelCtrl = modelCtrl;
 		inMessage = new Message();
 		outMessage = new Message();
+		outMessage.setController("customer");
 	}
 	
 	
@@ -32,30 +33,21 @@ public class CustomerViewController implements Runnable {
 		
 	}
 	
-	public void startWindow() {
-		while(true) {
-			inMessage = modelCtrl.getServerResponse();
-			System.out.println("message recieve");
-			if(inMessage != null && inMessage.getController().equals("customer")) {
-				actionCase(inMessage);
-				inMessage = new Message();
-			}
-		}
-	}
 	
 	public void actionCase(Message message) {
 		int choice = message.getAction();
 		String result;
 		switch(choice) {
 		// receiving customer info
+		case(0):
+			customerGUI.getResultField().setText("No result matches with you query");
+			break;
 		case(1):
-			System.out.println("case 1 received message");
 			result = modelCtrl.createCustList(message);
 			customerGUI.getResultField().setText(result);
 			break;
 		// display message
 		case(2):
-			System.out.println("case 2 received message");
 			result = message.getInfo();
 			customerGUI.getMessageField().setText(result);
 			break;
@@ -94,7 +86,7 @@ public class CustomerViewController implements Runnable {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if(customerGUI.getTypeButton().isSelected()) {
-				customerGUI.getLastButton().setSelected(false);
+				customerGUI.getClientidButton().setSelected(false);
 				customerGUI.getLastButton().setSelected(false);
 				
 			}
@@ -103,14 +95,12 @@ public class CustomerViewController implements Runnable {
 	
 	public class SearchButtonClick implements ActionListener{
 		int action;
-		String controller;
+		String controller= "customer";
 		String info;
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			controller = "customer";
 			// id button is selected
 			if(customerGUI.getClientidButton().isSelected()) {
-				System.out.println("id clicked");
 				action = 1;
 					
 			}
@@ -130,7 +120,9 @@ public class CustomerViewController implements Runnable {
 			outMessage.setAction(action);
 			outMessage.setInfo(info);
 			modelCtrl.sendServerMessage(outMessage);
-			//receive.
+			inMessage = modelCtrl.getServerResponse();
+			actionCase(inMessage);
+			inMessage = new Message();
 		}
 	}
 	
@@ -145,6 +137,9 @@ public class CustomerViewController implements Runnable {
 			String phone = customerGUI.getPhoneField().getText();
 			String type = customerGUI.getTypeField().getText();
 			modelCtrl.createCustomer(custid,first,last,ad,postal,phone,type);
+			inMessage = modelCtrl.getServerResponse();
+			actionCase(inMessage);
+			inMessage = new Message();
 		}
 		
 	}
@@ -153,13 +148,10 @@ public class CustomerViewController implements Runnable {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String custid = customerGUI.getCustidField().getText();
-			String first = customerGUI.getFirstField().getText();
-			String last = customerGUI.getLastField().getText();
-			String ad = customerGUI.getAddressField().getText();
-			String postal = customerGUI.getPostalField().getText();
-			String phone = customerGUI.getPhoneField().getText();
-			String type = customerGUI.getTypeField().getText();
-			modelCtrl.deleteCustomer(custid,first,last,ad,postal,phone,type);	
+			modelCtrl.deleteCustomer(custid);
+			inMessage = modelCtrl.getServerResponse();
+			actionCase(inMessage);
+			inMessage = new Message();
 		}
 		
 	}
@@ -176,8 +168,6 @@ public class CustomerViewController implements Runnable {
 			 customerGUI.getPhoneField().setText("");
 			 customerGUI.getTypeField().setText("");
 			 customerGUI.getMessageField().setText("Clear");
-			 
-			
 		}
 		
 	}
@@ -189,10 +179,4 @@ public class CustomerViewController implements Runnable {
 		this.customerGUI = customerGUI;
 	}
 
-
-	@Override
-	public void run() {
-		startWindow();
-		
-	}
 }

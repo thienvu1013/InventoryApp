@@ -1,4 +1,5 @@
 package Server.Controller;
+import java.io.IOException;
 import java.net.Socket;
 
 import Model.Deserializer;
@@ -23,6 +24,18 @@ public class ServerController {
 		deserializer = new Deserializer(theSocket);
 		theMessage = null;
 		
+	}
+	
+	public void closeClient() {
+		try {
+			if(theSocket!=null) {
+				theSocket.close();
+			}
+			serializer.close();
+			deserializer.close();
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	public Message recieveMessage() {

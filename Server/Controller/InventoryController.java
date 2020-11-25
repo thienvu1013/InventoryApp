@@ -3,7 +3,6 @@ package Server.Controller;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
 import Model.Electrical;
 import Model.Item;
 import Model.Message;
@@ -11,8 +10,7 @@ import Model.NonElectrical;
 
 public class InventoryController {
 	private DBController dbCtrl;
-	private Message outMessage;
-	private ResultSet myRs; 
+	private Message outMessage; 
 	private String controller = "inventory";
 	public InventoryController(DBController db) {
 		outMessage = new Message();
@@ -26,41 +24,46 @@ public class InventoryController {
 			Item item;
 			boolean success;
 			switch(choice) {
+			
+			//list all items
 			case 1:
-					 
 					myRs = dbCtrl.findAll();
 					outMessage =generateMessage(myRs);
 					break;
-				
+			//search by name	
 			case 2:
 			 
 					String name = message.getInfo();
 					myRs = dbCtrl.searchItemName(name);
 					outMessage =generateMessage(myRs);
 					break;
-			
+			//search by id
 			case 3:
-					 
+					System.out.println("message reciened");
 					int id = Integer.parseInt(message.getInfo());
+					System.out.println(id);
 					myRs = dbCtrl.searchItemID(id);
 					outMessage =generateMessage(myRs);	
 					break;
-			
+			//decrease quantity
 			case 4:
 					int tool = Integer.parseInt(message.getInfo());
-					int qty = Integer.parseInt(message.getQty());
+					int qty = Integer.parseInt((String) message.getObject());
+					System.out.println(tool);
+					System.out.println(qty);
 					outMessage.setAction(2);
 					if(dbCtrl.decreaseQty(tool,qty))
 					{
 						outMessage.setInfo("Item quantity decreased");
+						checkQuantity();
 					}
 					else {
 						outMessage.setInfo("Operation failed");
 					}
 					break;
-					
+			//adding item
 			case 5:
-					item = message.getTheItem();
+					item = (Item) message.getObject();
 					if(item instanceof Electrical) {
 						Electrical e_item = (Electrical)item;
 						success = addElectrical(e_item);
@@ -78,7 +81,7 @@ public class InventoryController {
 						
 					}
 					break;
-					
+			//delete items		
 			case 6:
 					id = Integer.parseInt(message.getInfo());
 					success = dbCtrl.deleteTool(id);
@@ -99,30 +102,32 @@ public class InventoryController {
 	}
 	
 	public Message generateMessage(ResultSet myRs) throws SQLException {
-		if (myRs.next()) {
-			ArrayList<Item>itemList = createItemList(myRs);
+		ArrayList<Item>itemList = createItemList(myRs);
+		if (itemList!= null) {
 			outMessage.setAction(1);
-			outMessage.setItemList(itemList);
+			outMessage.setObject(itemList);
 		}
 		else {
-			outMessage.setAction(1);
+			outMessage.setAction(2);
 			outMessage.setInfo("No item found");
-		}
+	}
 	return outMessage;
 	}
 	
-	public ArrayList<Item> createItemList(ResultSet rs){
+	
+	public ArrayList<Item> createItemList(ResultSet rs) throws SQLException{
 		ArrayList<Item> theList = new ArrayList<Item>();
-		try {
-			while(rs.next()) {
-				Item customer = createItem(rs);
+		if (!rs.next() ) {
+		    return null;
+		} else {
+
+		    do {
+		    	Item customer = createItem(rs);
 				theList.add(customer);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    } while (rs.next());
 		}
 		return theList;
+		
 	}
 	
 	public Item createItem(ResultSet rs) throws SQLException {
@@ -184,6 +189,17 @@ public class InventoryController {
 		int item_sup = item.getSupplier();
 		String item_type = item.getType();
 		return(dbCtrl.addTool(item_id, item_name, item_qty, item_price,item_sup, item_type));
+	}
+	
+	public void checkQuantity() {
+		try {
+			System.out.println("creating orders");
+			ResultSet rs = dbCtrl.findShortage();
+			ArrayList<Item>itemList = createItemList(rs);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
