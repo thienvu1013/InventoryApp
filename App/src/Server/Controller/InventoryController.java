@@ -1,5 +1,7 @@
 package Server.Controller;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -7,6 +9,7 @@ import Model.Electrical;
 import Model.Item;
 import Model.Message;
 import Model.NonElectrical;
+
 
 public class InventoryController {
 	private DBController dbCtrl;
@@ -39,7 +42,6 @@ public class InventoryController {
 					break;
 			//search by id
 			case 3:
-					System.out.println("message reciened");
 					int id = Integer.parseInt(message.getInfo());
 					System.out.println(id);
 					myRs = dbCtrl.searchItemID(id);
@@ -49,13 +51,11 @@ public class InventoryController {
 			case 4:
 					int tool = Integer.parseInt(message.getInfo());
 					int qty = Integer.parseInt((String) message.getObject());
-					System.out.println(tool);
-					System.out.println(qty);
 					outMessage.setAction(2);
 					if(dbCtrl.decreaseQty(tool,qty))
 					{
 						outMessage.setInfo("Item quantity decreased");
-						checkQuantity();
+						generateOrderTxt();
 					}
 					else {
 						outMessage.setInfo("Operation failed");
@@ -95,7 +95,6 @@ public class InventoryController {
 					break;
 			}	
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return outMessage;
@@ -191,15 +190,86 @@ public class InventoryController {
 		return(dbCtrl.addTool(item_id, item_name, item_qty, item_price,item_sup, item_type));
 	}
 	
-	public void checkQuantity() {
+	
+	public void generateOrderTxt() {
+		ResultSet rs = dbCtrl.getOrders();
+		ArrayList<String> orders = createOrderList(rs);
+		FileWriter writer;
 		try {
-			System.out.println("creating orders");
-			ResultSet rs = dbCtrl.findShortage();
-			ArrayList<Item>itemList = createItemList(rs);
-			
-		} catch (SQLException e) {
+			writer = new FileWriter("Orders.txt");
+			for(String str:orders) {
+				System.out.println(str);
+				writer.write(str);
+			}
+			writer.close();
+		} catch (IOException e) {
+			System.out.println("fail to write");
 			e.printStackTrace();
 		}
+		
+		
 	}
+	
+	public ArrayList<String> createOrderList(ResultSet rs){
+		ArrayList<String> orders = new ArrayList<String>();
+		try {  
+			 while (rs.next()) {
+				 String o = createOrder(rs);
+				orders.add(o);
+			 }
+			
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+
+		}
+		return orders;
+	}
+	
+	
+	public String createOrder(ResultSet rs){
+		String result ="";
+		int order_id;
+		try {
+			order_id = rs.getInt("OrderID");
+			String date = rs.getDate("Order_Date").toString();
+			String orderlines = createOrderLines(dbCtrl.getOrderLines(order_id));
+			String sep = "\n----------------------------------------------------------------------------";
+			result = sep+"\nOrder Number: "+order_id+"\t\tDate: "+ date +"\n"+orderlines;
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return result;
+		
+	}
+	private String createOrderLines(ResultSet oL){
+		String orderlines = "";
+		try {    
+			while (oL.next()) {
+				String orderL = createLine(oL);
+				orderlines = orderlines + orderL + "\n";
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return orderlines;
+	}
+	private String createLine(ResultSet oL){
+		String id;
+		String result="";
+		try {
+			id = Integer.toString(oL.getInt("Order_ID"));
+			String tool = oL.getString("Tool");
+			String supplier = oL.getString("Supplier");
+			String qty = Integer.toString(oL.getInt("Quantity"));
+			String sep = "\t-\t";
+			result = id+sep+tool+sep+supplier+sep+qty+"\n";
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return result;
+	}
+	
+	
 	
 }

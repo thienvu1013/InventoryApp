@@ -31,7 +31,6 @@ public class LoginController {
 		this.invCtrl = invCtrl;
 		while(true) {
 			if(logginIn == true) {
-				System.out.println(logginIn);
 				break;
 			}
 			continue;

@@ -240,10 +240,10 @@ public class DBController {
 		return success;
 	}
 	
-	public ResultSet findShortage() {
+	public ResultSet getOrders() {
 		ResultSet myRs;
 		try {
-			myCall = jdbc_connection.prepareCall("{call find_shortage()}");
+			myCall = jdbc_connection.prepareCall("{call find_orders()}");
 			myCall.execute();
 			myRs = myCall.getResultSet();
 			} catch (SQLException e) {
@@ -251,6 +251,22 @@ public class DBController {
 		}
 		return myRs;
 		
+	}
+	
+	public ResultSet getOrderLines(int id){
+		ResultSet myRs;
+		try {
+			myCall = jdbc_connection.prepareCall("{call find_orderLines(?)}");
+			myCall.setInt(1,id);
+			myCall.execute();
+			myRs = myCall.getResultSet();
+			} 
+		catch (SQLException e) {
+			System.out.println(e.getMessage());
+			System.out.println("query failed");
+			return null;
+		}
+		return myRs;
 	}
 	
 	

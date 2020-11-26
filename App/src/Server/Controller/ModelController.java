@@ -66,14 +66,8 @@ public class ModelController implements Runnable {
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 		}finally {
-			System.out.println("closing client");
+			System.out.println("Client Terminate");
 			serverCtrl.closeClient();
-			try {
-				dbCtrl.getJdbc_connection().close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 	}
 	

@@ -41,7 +41,12 @@ public class ModelController {
 		String result ="";
 		custList = (ArrayList<Customer>) message.getObject();
 		for(Customer customer : custList) {
-			customer = (Residential) customer;
+			if (customer instanceof Residential) {
+				customer = (Residential) customer;
+			}
+			else if (customer instanceof Commercial) {
+				customer = (Commercial) customer;
+			}
 			String id = Integer.toString(customer.getCustomer_id());
 			String lastName = customer.getLastName();
 			String firstName = customer.getFirstName();

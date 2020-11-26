@@ -1,0 +1,26 @@
+
+----------------------------------------------------------------------------
+Order Number: 1000		Date: 2020-11-24
+1000	-	Twinkies	-	Twinkles Inc.	-	1512
+
+
+----------------------------------------------------------------------------
+Order Number: 10000		Date: 2020-11-25
+10000	-	Widgets	-	Winork Manufacturing Inc.	-	41
+
+10000	-	Grommets	-	Grommet Builders	-	34
+
+10000	-	Wedges	-	Wings Works	-	39
+
+10000	-	Wing Bats	-	Wiley Inc.	-	42
+
+10000	-	Twinkies	-	Twinkles Inc.	-	1523
+
+10000	-	Barney Bits	-	Paddy's Manufacturing	-	38
+
+10000	-	Barge Bogs	-	Biff Builders	-	16
+
+10000	-	Tin Wits	-	Tic Tac Manufacturing	-	37
+
+10000	-	Laptop	-	Grommet Builders	-	15
+
