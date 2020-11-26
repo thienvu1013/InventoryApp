@@ -1,0 +1,21 @@
+
+Trigger for when a Tool has been updated. 
+    1. Create a new order record for the day if it has not been created
+    2. Populate the orderline table for the item thats being modified if the quantity is less than 40.
+
+------------------------------------------------------------------------------------
+DELIMITER $$
+USE `InventoryApp`$$
+
+CREATE DEFINER = CURRENT_USER TRIGGER `InventoryApp`.`decrease_op` AFTER UPDATE ON `TOOL` FOR EACH ROW
+BEGIN
+IF new.Quantity < 40 THEN
+INSERT IGNORE INTO ORDERS (Order_Date) VALUES(Date(Now()));
+INSERT INTO ORDERLINE(Order_ID, Tool_ID, Sup_ID, Quantity) VALUES (
+			(SELECT O.OrderID FROM ORDERS AS O WHERE O.Order_Date = DATE(NOW())),
+            new.ToolID,new.SupplierID,(50-new.Quantity)) 
+            ON DUPLICATE KEY UPDATE ORDERLINE.Quantity = (50-new.Quantity);
+END IF;
+END$$
+DELIMITER ;
+
