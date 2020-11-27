@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import Model.CheckInput;
 import Model.Electrical;
 import Model.Item;
 import Model.Message;
@@ -22,10 +24,12 @@ public class InventoryController {
 	}
 	public Message handle(Message message) {
 		try {
+			CheckInput check = new CheckInput();
 			int choice = message.getAction();
 			ResultSet myRs;
 			Item item;
 			boolean success;
+			int id;
 			switch(choice) {
 			
 			//list all items
@@ -42,13 +46,23 @@ public class InventoryController {
 					break;
 			//search by id
 			case 3:
-					int id = Integer.parseInt(message.getInfo());
-					System.out.println(id);
-					myRs = dbCtrl.searchItemID(id);
-					outMessage =generateMessage(myRs);	
-					break;
+					if(check.checkID(message)) {
+						System.out.println("valid number");
+						id = Integer.parseInt(message.getInfo());
+						System.out.println(id);
+						myRs = dbCtrl.searchItemID(id);
+						outMessage =generateMessage(myRs);	
+						break;
+					}
+					else {
+						outMessage.setAction(2);
+						outMessage.setInfo("Invalid input. Please try again");
+						break;
+					}
+					
 			//decrease quantity
 			case 4:
+				if(check.checkID(message)) {
 					int tool = Integer.parseInt(message.getInfo());
 					int qty = Integer.parseInt((String) message.getObject());
 					outMessage.setAction(2);
@@ -61,6 +75,12 @@ public class InventoryController {
 						outMessage.setInfo("Operation failed");
 					}
 					break;
+				}else{
+					outMessage.setAction(2);
+					outMessage.setInfo("Invalid input. Please try again");
+					break;
+				}
+					
 			//adding item
 			case 5:
 					item = (Item) message.getObject();
@@ -83,16 +103,23 @@ public class InventoryController {
 					break;
 			//delete items		
 			case 6:
-					id = Integer.parseInt(message.getInfo());
-					success = dbCtrl.deleteTool(id);
-					outMessage.setAction(2);
-					if(success) {
-						outMessage.setInfo("Tool deleted");
+					if(check.checkID(message)){
+						id = Integer.parseInt(message.getInfo());
+						success = dbCtrl.deleteTool(id);
+						outMessage.setAction(2);
+						if(success) {
+							outMessage.setInfo("Tool deleted");
+						}
+						else {
+							outMessage.setInfo("Error in deleting tool");
+						}	
+						break;
+					}else {
+						outMessage.setAction(2);
+						outMessage.setInfo("Invalid input. Please try again");
+						break;
 					}
-					else {
-						outMessage.setInfo("Error in deleting tool");
-					}	
-					break;
+					
 			}	
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -105,29 +105,41 @@ public class ModelController {
 		return result;
 	}
 	
-	public void createCustomer(String custid,String first,String last,String ad,String postal,String phone,String type) {
-		int id = Integer.parseInt(custid);
-		if (type.equals("R")){
-			theCustomer = new Residential(id, last, first, phone, ad, postal,type);
+	public boolean createCustomer(String custid,String first,String last,String ad,String postal,String phone,String type) {
+		try {
+			int id = Integer.parseInt(custid);
+			if (type.equals("R")){
+				theCustomer = new Residential(id, last, first, phone, ad, postal,type);
+			}
+			else if(type.equals("C")) {
+				theCustomer = new Commercial(id,last, first, phone, ad, postal, type);
+			}
+			else {
+				return false;
+			}
+			outMessage.setAction(4);
+			outMessage.setObject(theCustomer);
+			outMessage.setController("customer");
+			sendServerMessage(outMessage);
+			return true;
+		}catch(Exception e) {
+			return false;
 		}
-		else if(type.equals("C")) {
-			theCustomer = new Commercial(id,last, first, phone, ad, postal, type);
-		}
-		else {
-			return;
-		}
-		outMessage.setAction(4);
-		outMessage.setObject(theCustomer);
-		outMessage.setController("customer");
-		sendServerMessage(outMessage);
+		
 	}
-	public void deleteCustomer(String custid) {
-		System.out.println("model called");
-		int id = Integer.parseInt(custid);
-		outMessage.setAction(5);
-		outMessage.setObject(id);
-		outMessage.setController("customer");
-		sendServerMessage(outMessage);
+	public boolean deleteCustomer(String custid) {
+		try {
+			int id = Integer.parseInt(custid);
+			outMessage.setAction(5);
+			outMessage.setObject(id);
+			outMessage.setController("customer");
+			sendServerMessage(outMessage);
+			return true;
+		}catch(Exception e) {
+			return false;
+		}
+		
+		
 	}
 	
 	public Item createItem(int id,String name,int qty,double price,int sup_id,String type,String power) {

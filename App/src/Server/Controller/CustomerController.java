@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import Model.Message;
+import Model.CheckInput;
 import Model.Commercial;
 import Model.Customer;
 import Model.Residential;
@@ -30,14 +31,23 @@ public class CustomerController {
 	public Message handle(Message message) {
 		try {
 			int choice = message.getAction();
+			CheckInput check = new CheckInput();
 			ResultSet myRs;
 			Customer customer;
+			int id;
 			switch(choice) {
 			case 1: 
-					int id = Integer.parseInt(message.getInfo());
-					myRs = dbCtrl.searchCustID(id);
-					outMessage =generateMessage(myRs);
-					break;
+					if(check.checkID(message)) {
+						id = Integer.parseInt(message.getInfo());
+						myRs = dbCtrl.searchCustID(id);
+						outMessage =generateMessage(myRs);
+						break;
+					}
+					// for invalid input
+					else {
+						outMessage.setAction(0);
+					}
+					
 			case 2:
 					String last = message.getInfo();
 					myRs = dbCtrl.searchCustLast(last);
@@ -61,7 +71,8 @@ public class CustomerController {
 					break;
 			}	
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			outMessage.setAction(0);
+			outMessage.setInfo("Invalid input");
 			e.printStackTrace();
 		}
 		return outMessage;

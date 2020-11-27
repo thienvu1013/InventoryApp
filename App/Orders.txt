@@ -24,3 +24,8 @@ Order Number: 10000		Date: 2020-11-25
 
 10000	-	Laptop	-	Grommet Builders	-	15
 
+
+----------------------------------------------------------------------------
+Order Number: 10004		Date: 2020-11-26
+10004	-	Crazy	-	Pong Works	-	40
+

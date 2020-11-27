@@ -136,9 +136,15 @@ public class CustomerViewController{
 			String postal = customerGUI.getPostalField().getText();
 			String phone = customerGUI.getPhoneField().getText();
 			String type = customerGUI.getTypeField().getText();
-			modelCtrl.createCustomer(custid,first,last,ad,postal,phone,type);
-			inMessage = modelCtrl.getServerResponse();
-			actionCase(inMessage);
+			if(modelCtrl.createCustomer(custid,first,last,ad,postal,phone,type)) {
+				inMessage = modelCtrl.getServerResponse();
+				actionCase(inMessage);
+			}
+			else {
+				inMessage.setAction(2);
+				inMessage.setInfo("Please input proper format");
+				actionCase(inMessage);
+			}
 			inMessage = new Message();
 		}
 		
@@ -148,9 +154,15 @@ public class CustomerViewController{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String custid = customerGUI.getCustidField().getText();
-			modelCtrl.deleteCustomer(custid);
-			inMessage = modelCtrl.getServerResponse();
-			actionCase(inMessage);
+			if(modelCtrl.deleteCustomer(custid)) {
+				inMessage = modelCtrl.getServerResponse();
+				actionCase(inMessage);
+			}
+			else {
+				inMessage.setAction(2);
+				inMessage.setInfo("Please input proper format");
+				actionCase(inMessage);
+			}
 			inMessage = new Message();
 		}
 		

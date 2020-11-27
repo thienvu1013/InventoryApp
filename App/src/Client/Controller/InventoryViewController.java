@@ -179,7 +179,6 @@ public class InventoryViewController{
 			outMessage.setController(controller);
 			outMessage.setInfo(tool);
 			outMessage.setObject(qty);
-			System.out.println("qty send message");
 			modelCtrl.sendServerMessage(outMessage);
 			inMessage = modelCtrl.getServerResponse();
 			actionCase(inMessage);
@@ -194,19 +193,26 @@ public class InventoryViewController{
 		String controller = "inventory";
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int id = Integer.parseInt(inventoryGUI.getaDIDField().getText());
-			String name = inventoryGUI.getAdNameField().getText();
-			int qty = Integer.parseInt(inventoryGUI.getAdQtyField().getText());
-			double price = Double.parseDouble(inventoryGUI.getaDPriceField().getText());
-			int sup_id = Integer.parseInt(inventoryGUI.getaDSupplyField().getText());
-			String type = inventoryGUI.getaDTypeField().getText();
-			String power = inventoryGUI.getaDPowerField().getText();
-			outMessage.setObject(modelCtrl.createItem(id,name,qty,price,sup_id,type,power));
-			outMessage.setAction(5);
-			outMessage.setController(controller);
-			modelCtrl.sendServerMessage(outMessage);
-			inMessage = modelCtrl.getServerResponse();
-			actionCase(inMessage);
+			try {
+				int id = Integer.parseInt(inventoryGUI.getaDIDField().getText());
+				String name = inventoryGUI.getAdNameField().getText();
+				int qty = Integer.parseInt(inventoryGUI.getAdQtyField().getText());
+				double price = Double.parseDouble(inventoryGUI.getaDPriceField().getText());
+				int sup_id = Integer.parseInt(inventoryGUI.getaDSupplyField().getText());
+				String type = inventoryGUI.getaDTypeField().getText();
+				String power = inventoryGUI.getaDPowerField().getText();
+				outMessage.setObject(modelCtrl.createItem(id,name,qty,price,sup_id,type,power));
+				outMessage.setAction(5);
+				outMessage.setController(controller);
+				modelCtrl.sendServerMessage(outMessage);
+				inMessage = modelCtrl.getServerResponse();
+				actionCase(inMessage);
+			}catch(Exception ex){
+				inMessage.setAction(2);
+				inMessage.setInfo("Invalid input. Please try again");
+				actionCase(inMessage);
+			}
+			
 			inMessage = new Message();
 		}
 		

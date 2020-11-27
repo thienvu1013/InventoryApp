@@ -14,46 +14,27 @@ public class ModelController implements Runnable {
 	private CustomerController custCtrl;
 	private InventoryController invCtrl;
 	private Socket clientSocket;
-	private ServerSocket serverSocket;
-	private ExecutorService pool;
 	private ServerController serverCtrl;
 	private DBController dbCtrl;
 	boolean isRunning = true;
 	private Message inMessage;
 	private Message outMessage;
 	
-	public ModelController(int portNumber,ServerController srvCtrl, DBController dbCtrl, CustomerController cc, InventoryController ic) {
-		try {
-			serverSocket = new ServerSocket(portNumber);
+	public ModelController(Socket clientSocket,ServerController srvCtrl, DBController dbCtrl, CustomerController cc, InventoryController ic) {
 			this.serverCtrl = srvCtrl;
 			this.dbCtrl = dbCtrl;
 			this.setCustCtrl(cc);
 			this.setInvCtrl(ic);
-			setPool(Executors.newFixedThreadPool(2));
-		} catch (IOException e) {
-			System.out.println("Server failed");
-			e.printStackTrace();
-		}
+			this.clientSocket = clientSocket;
+
 	}
 	
-	public void runServer() {
-		try {
-			while(true) {
-				setClientSocket(serverSocket.accept());
-				serverCtrl.setup(clientSocket);
-				pool.execute(this);
-				
-			}
-		} catch (IOException e) {
-			System.out.println("Client terminating");
-			
-		}
-	}
 
 
 	@Override
 	public void run() {
 		try {
+			serverCtrl.setup(clientSocket);
 			while(isRunning) {
 				inMessage = serverCtrl.recieveMessage();
 				if(inMessage.getAction()==-1) {
@@ -109,14 +90,6 @@ public class ModelController implements Runnable {
 
 	public void setClientSocket(Socket clientSocket) {
 		this.clientSocket = clientSocket;
-	}
-
-	public ExecutorService getPool() {
-		return pool;
-	}
-
-	public void setPool(ExecutorService pool) {
-		this.pool = pool;
 	}
 
 	public ServerController getServerCtrl() {
